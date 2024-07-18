@@ -1,6 +1,6 @@
 directories:
-  input: /scripts/local_transcription_v2/input_media
-  output: /scripts/local_transcription_v2/output
+  input: /Users/jaswanth/Jaswanth_Workspace/video_collection
+  output: transcripts_generated/
 
 logging:
   level: INFO
