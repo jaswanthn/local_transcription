@@ -3,6 +3,7 @@ import sys
 import yaml
 import logging
 from tqdm import tqdm
+from src.generate_instruction_completion_datasets import generate_instruction_completion_dataset
 
 # Add the project root to the Python path
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -25,6 +26,7 @@ try:
     from src.video_to_audio import process_media
     print("Successfully imported process_media from src.video_to_audio")
     from src.transcription import transcribe_audios
+    from src.generate_combined_transcript import generate_combined_transcript
     from src.utils import setup_logging, create_output_directories
 except ImportError as e:
     print(f"Error importing modules: {e}")
@@ -65,9 +67,22 @@ def main():
             def update_progress(future):
                 pbar.update()
             
-            transcribe_audios(audio_files, output_dir, config['transcription'], update_progress)
+        transcriptions = transcribe_audios(audio_files, output_dir, config['transcription'], update_progress)
 
         logger.info("Processing complete")
+
+        # Merge generated transcripts
+        logger.info("starting transcript merge")
+
+        generate_combined_transcript(transcriptions, 'combined_transcription.txt')
+        logger.info("combined script generated")
+
+        instruction_completion_dataset = generate_instruction_completion_dataset(transcriptions)
+        for original, generated in instruction_completion_dataset:
+            with open('output_file.txt', 'w') as file:
+                file.write(generated)
+            # print(f"Original: {original}\nGenerated: {generated}\n")  
+        
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         sys.exit(1)

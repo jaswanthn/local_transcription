@@ -18,7 +18,7 @@ def transcribe_audio(audio_path, transcription):
     result = model.transcribe(audio_path)
     return result['text']
 
-# transcriptions = {}
+transcriptions = {}
 
 def transcribe_audios(audio_files, output_dir, transcriptionMode, update_progress):
     for audio_file in audio_files:
@@ -27,13 +27,14 @@ def transcribe_audios(audio_files, output_dir, transcriptionMode, update_progres
 
         # Build the output transcript filename
         output_filename = os.path.join(output_dir, f"{filename}.txt")
-        transcription = transcribe_audio(audio_file, transcriptionMode)
+        transcriptions[audio_file] = transcribe_audio(audio_file, transcriptionMode)
 
         # Save transcript to output file
         with open(output_filename, 'w') as f:
-            f.write(transcription)
+            f.write(transcriptions[audio_file])
 
         if update_progress:
             update_progress(filename) 
         # Cooling time
         time.sleep(cooling_time)
+    return transcriptions
