@@ -27,11 +27,8 @@ def process_chunks(input_text):
     
     return torch.cat(outputs, dim=1)
 
-def generate_instruction_completion_dataset(transcriptions):
-    dataset = []
-    for transcription in transcriptions.values():
+def generate_instruction_completion_dataset(output_path):
+    with open(output_path, 'r') as f:
         # Combine outputs and decode
-        output_ids = process_chunks(transcription)
-        completion = tokenizer.decode(output_ids[0], skip_special_tokens=True)
-        dataset.append((transcription, completion))
-    return dataset
+        output_ids = process_chunks(f.read())
+        return tokenizer.decode(output_ids[0], skip_special_tokens=True)

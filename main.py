@@ -2,6 +2,7 @@ import os
 import sys
 import yaml
 import logging
+import time
 from tqdm import tqdm
 from src.generate_instruction_completion_datasets import generate_instruction_completion_dataset
 
@@ -38,6 +39,7 @@ except ImportError as e:
 
 def main():
     try:
+        start_time = time.time()
         # Load configuration
         with open('config.yaml', 'r') as config_file:
             config = yaml.safe_load(config_file)
@@ -74,15 +76,15 @@ def main():
         # Merge generated transcripts
         logger.info("starting transcript merge")
 
-        generate_combined_transcript(transcriptions, 'combined_transcription.txt')
+        generate_combined_transcript(transcriptions, output_dir + '/combined_transcription.txt')
         logger.info("combined script generated")
 
-        instruction_completion_dataset = generate_instruction_completion_dataset(transcriptions)
-        for original, generated in instruction_completion_dataset:
-            with open('output_file.txt', 'w') as file:
-                file.write(generated)
-            # print(f"Original: {original}\nGenerated: {generated}\n")  
+        instruction_completion_data = generate_instruction_completion_dataset(output_dir + '/combined_transcription.txt')
+        with open(output_dir + '/chatGPT_output_file.txt', 'w') as file:
+            file.write(instruction_completion_data)
         
+        end_time = time.time()
+        logging.info(f"Total time taken: {end_time - start_time:.2f} seconds")
     except Exception as e:
         logging.error(f"An error occurred: {str(e)}")
         sys.exit(1)
