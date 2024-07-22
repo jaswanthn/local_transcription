@@ -84,9 +84,9 @@ def main():
             file.write(instruction_completion_data)
         
         end_time = time.time()
-        logging.info(f"Total time taken: {end_time - start_time:.2f} seconds")
+        logger.info(f"Total time taken: {end_time - start_time:.2f} seconds")
     except Exception as e:
-        logging.error(f"An error occurred: {str(e)}")
+        logger.error(f"An error occurred: {str(e)}")
         sys.exit(1)
 
 if __name__ == "__main__":
