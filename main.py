@@ -26,7 +26,7 @@ try:
     print("Attempting to import from src.video_to_audio...")
     from src.video_to_audio import process_media
     print("Successfully imported process_media from src.video_to_audio")
-    from src.transcription import transcribe_audios
+    from src.transcription import transcribe_audios, optimized_transcribe
     from src.generate_combined_transcript import generate_combined_transcript
     from src.utils import setup_logging, create_output_directories
 except ImportError as e:
@@ -69,9 +69,10 @@ def main():
             def update_progress(future):
                 pbar.update()
             
-        transcriptions = transcribe_audios(audio_files, output_dir, config['transcription'], update_progress)
+        # transcriptions = transcribe_audios(audio_files, output_dir, config['transcription'], update_progress)
+        transcriptions = optimized_transcribe(audio_files, output_dir, config['transcription'], update_progress)
 
-        logger.info("Processing complete")
+        logger.info("transcription process complete")
 
         # Merge generated transcripts
         logger.info("starting transcript merge")
@@ -79,6 +80,7 @@ def main():
         generate_combined_transcript(transcriptions, output_dir + '/combined_transcription.txt')
         logger.info("combined script generated")
 
+        # generate instruction completion dataset
         instruction_completion_data = generate_instruction_completion_dataset(output_dir + '/combined_transcription.txt')
         with open(output_dir + '/chatGPT_output_file.txt', 'w') as file:
             file.write(instruction_completion_data)
